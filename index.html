@@ -8,7 +8,40 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-shell">
+
+  <section class="login-screen" id="loginScreen">
+    <div class="login-shell">
+      <div class="login-brand">
+        <div class="brand-mark login-mark">R</div>
+        <div>
+          <strong>ResolveOps</strong>
+          <span>Incident Management</span>
+        </div>
+      </div>
+      <div class="login-card">
+        <p class="eyebrow">SERVICE OPERATIONS</p>
+        <h1>Sign in</h1>
+        <p class="login-intro">Access the incident management workspace.</p>
+        <form id="loginForm">
+          <label class="login-field">
+            <span>Username</span>
+            <input name="username" autocomplete="username" value="Admin" required>
+          </label>
+          <label class="login-field">
+            <span>Password</span>
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <div class="login-error" id="loginError" role="alert"></div>
+          <button type="submit" class="primary-button login-button" id="loginButton">
+            <span class="button-label">Sign in</span>
+            <span class="button-loader" aria-hidden="true"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="app-shell is-hidden" id="appShell">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-mark">R</div>
@@ -60,12 +93,13 @@
         <div class="top-actions">
           <button class="icon-button" aria-label="Notifications">♢<span class="notify-dot"></span></button>
           <div class="profile">
-            <div class="avatar">OR</div>
+            <div class="avatar" id="profileAvatar">OA</div>
             <div class="profile-copy">
-              <strong>Operations User</strong>
-              <span>Incident Manager</span>
+              <strong id="profileName">Operations Admin</strong>
+              <span id="profileRole">Admin</span>
             </div>
           </div>
+          <button class="text-button logout-button" id="logoutButton">Sign out</button>
         </div>
       </header>
 
@@ -327,6 +361,7 @@
   </div>
 
   <div class="toast" id="toast"><span>✓</span><div><strong>Saved</strong><small>Your changes have been applied.</small></div></div>
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
