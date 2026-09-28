@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>ResolveOps | Incident Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">R</div>
+        <div>
+          <strong>ResolveOps</strong>
+          <span>Service Operations</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="overview">
+          <span class="nav-icon">⌂</span><span>Overview</span>
+        </button>
+        <button class="nav-item" data-view="incidents">
+          <span class="nav-icon">◫</span><span>Incidents</span>
+          <span class="nav-count" id="navOpenCount">0</span>
+        </button>
+        <button class="nav-item" data-view="myqueue">
+          <span class="nav-icon">◎</span><span>My Queue</span>
+        </button>
+        <button class="nav-item" data-view="changes">
+          <span class="nav-icon">⇄</span><span>Changes</span>
+        </button>
+        <button class="nav-item" data-view="knowledge">
+          <span class="nav-icon">▤</span><span>Knowledge</span>
+        </button>
+        <button class="nav-item" data-view="reports">
+          <span class="nav-icon">⌁</span><span>Reports</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="health-dot"></div>
+        <div>
+          <strong>All systems operational</strong>
+          <span>Last checked just now</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menuButton" aria-label="Open menu">☰</button>
+        <div class="global-search">
+          <span>⌕</span>
+          <input id="globalSearch" type="search" placeholder="Search incidents, users or services">
+          <kbd>⌘ K</kbd>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" aria-label="Notifications">♢<span class="notify-dot"></span></button>
+          <div class="profile">
+            <div class="avatar">OR</div>
+            <div class="profile-copy">
+              <strong>Operations User</strong>
+              <span>Incident Manager</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="page">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">SERVICE OPERATIONS</p>
+            <h1 id="pageTitle">Incident Management</h1>
+            <p id="pageSubtitle">Monitor active incidents, service health and response performance.</p>
+          </div>
+          <button class="primary-button" id="newIncidentButton"><span>＋</span> New incident</button>
+        </div>
+
+        <section class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-top"><span>Open incidents</span><span class="stat-icon">◫</span></div>
+            <strong id="statOpen">0</strong>
+            <small><span class="trend neutral">Live</span> across all teams</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Critical priority</span><span class="stat-icon danger">!</span></div>
+            <strong id="statCritical">0</strong>
+            <small><span class="trend danger">P1</span> immediate attention</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>SLA at risk</span><span class="stat-icon warning">◷</span></div>
+            <strong id="statRisk">0</strong>
+            <small><span class="trend warning">30 min</span> response window</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Resolved today</span><span class="stat-icon success">✓</span></div>
+            <strong id="statResolved">0</strong>
+            <small><span class="trend success">+12%</span> vs yesterday</small>
+          </article>
+        </section>
+
+        <section class="priority-banner" id="priorityBanner">
+          <div class="priority-pulse"></div>
+          <div class="priority-copy">
+            <span class="banner-label">MAJOR INCIDENT</span>
+            <strong id="majorIncidentTitle">Payment gateway latency affecting checkout</strong>
+            <span id="majorIncidentMeta">INC-2048 · Customer Payments · P1 Critical</span>
+          </div>
+          <div class="banner-progress">
+            <span>SLA response</span>
+            <strong id="majorSla">18 min remaining</strong>
+          </div>
+          <button class="secondary-button banner-button" id="openMajorButton">Open incident</button>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel incident-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Active incidents</h2>
+                <p>Prioritised operational queue</p>
+              </div>
+              <button class="text-button" id="viewAllButton">View all</button>
+            </div>
+
+            <div class="filters">
+              <div class="filter-search">
+                <span>⌕</span>
+                <input id="incidentSearch" type="search" placeholder="Search incident queue">
+              </div>
+              <select id="priorityFilter" aria-label="Filter by priority">
+                <option value="all">All priorities</option>
+                <option value="P1">P1 Critical</option>
+                <option value="P2">P2 High</option>
+                <option value="P3">P3 Medium</option>
+                <option value="P4">P4 Low</option>
+              </select>
+              <select id="statusFilter" aria-label="Filter by status">
+                <option value="all">All statuses</option>
+                <option value="New">New</option>
+                <option value="Investigating">Investigating</option>
+                <option value="Monitoring">Monitoring</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Incident</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Owner</th>
+                    <th>SLA</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="incidentTable"></tbody>
+              </table>
+              <div class="empty-state" id="emptyState" hidden>
+                <div>⌕</div>
+                <strong>No incidents found</strong>
+                <span>Try adjusting your search or filters.</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="right-column">
+            <section class="panel sla-panel">
+              <div class="panel-header compact">
+                <div>
+                  <h2>SLA health</h2>
+                  <p>Current response performance</p>
+                </div>
+                <span class="status-chip healthy">Healthy</span>
+              </div>
+
+              <div class="donut-row">
+                <div class="donut" id="slaDonut"><div><strong id="slaPercent">92%</strong><span>within SLA</span></div></div>
+                <div class="sla-breakdown">
+                  <div><span class="dot good"></span><span>Within SLA</span><strong id="slaWithin">24</strong></div>
+                  <div><span class="dot warn"></span><span>At risk</span><strong id="slaAtRisk">3</strong></div>
+                  <div><span class="dot bad"></span><span>Breached</span><strong id="slaBreached">1</strong></div>
+                </div>
+              </div>
+
+              <div class="metric-row">
+                <div><span>Avg. acknowledge</span><strong>08m</strong><small>Target 15m</small></div>
+                <div><span>Avg. resolve</span><strong>2h 18m</strong><small>Target 4h</small></div>
+              </div>
+            </section>
+
+            <section class="panel activity-panel">
+              <div class="panel-header compact">
+                <div>
+                  <h2>Recent activity</h2>
+                  <p>Latest incident updates</p>
+                </div>
+              </div>
+              <div class="activity-list" id="activityList"></div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="incident-drawer" id="incidentDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <span class="drawer-id" id="drawerId">INC-0000</span>
+        <h2 id="drawerTitle">Incident title</h2>
+      </div>
+      <button class="icon-button" id="closeDrawer" aria-label="Close incident">×</button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="drawer-meta-row">
+        <span class="priority-pill" id="drawerPriority">P2 High</span>
+        <span class="status-pill" id="drawerStatus">Investigating</span>
+      </div>
+
+      <div class="detail-grid">
+        <div><span>Service</span><strong id="drawerService"></strong></div>
+        <div><span>Assigned to</span><strong id="drawerOwner"></strong></div>
+        <div><span>Reported</span><strong id="drawerCreated"></strong></div>
+        <div><span>SLA target</span><strong id="drawerSla"></strong></div>
+      </div>
+
+      <section class="drawer-section">
+        <h3>Description</h3>
+        <p id="drawerDescription"></p>
+      </section>
+
+      <section class="drawer-section">
+        <h3>Impact assessment</h3>
+        <div class="impact-card">
+          <div><span>Impact</span><strong id="drawerImpact"></strong></div>
+          <div><span>Urgency</span><strong id="drawerUrgency"></strong></div>
+          <div><span>Users affected</span><strong id="drawerUsers"></strong></div>
+        </div>
+      </section>
+
+      <section class="drawer-section">
+        <div class="section-title-row">
+          <h3>Activity</h3>
+          <span id="drawerUpdated"></span>
+        </div>
+        <div class="timeline" id="drawerTimeline"></div>
+      </section>
+    </div>
+
+    <div class="drawer-footer">
+      <select id="drawerStatusSelect" aria-label="Update incident status">
+        <option>New</option>
+        <option>Investigating</option>
+        <option>Monitoring</option>
+        <option>Resolved</option>
+      </select>
+      <button class="primary-button" id="saveIncidentButton">Save update</button>
+    </div>
+  </aside>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div><span class="eyebrow">CREATE</span><h2 id="modalTitle">New incident</h2></div>
+        <button class="icon-button" id="closeModal" aria-label="Close">×</button>
+      </div>
+      <form id="incidentForm">
+        <label>
+          <span>Short description</span>
+          <input name="title" required placeholder="Describe the issue">
+        </label>
+        <div class="form-grid">
+          <label>
+            <span>Service</span>
+            <select name="service" required>
+              <option>Customer Payments</option>
+              <option>Identity & Access</option>
+              <option>Employee Technology</option>
+              <option>Data Platform</option>
+              <option>Customer Portal</option>
+            </select>
+          </label>
+          <label>
+            <span>Priority</span>
+            <select name="priority" required>
+              <option value="P3">P3 Medium</option>
+              <option value="P1">P1 Critical</option>
+              <option value="P2">P2 High</option>
+              <option value="P4">P4 Low</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          <span>Description</span>
+          <textarea name="description" required rows="5" placeholder="What is happening, who is affected and what changed?"></textarea>
+        </label>
+        <div class="form-grid">
+          <label>
+            <span>Assign to</span>
+            <select name="owner">
+              <option>Service Desk</option>
+              <option>Priya Shah</option>
+              <option>Daniel Reed</option>
+              <option>Maya Patel</option>
+              <option>Alex Morgan</option>
+            </select>
+          </label>
+          <label>
+            <span>Users affected</span>
+            <input name="users" type="number" min="1" value="1">
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" id="cancelModal">Cancel</button>
+          <button type="submit" class="primary-button">Create incident</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"><span>✓</span><div><strong>Saved</strong><small>Your changes have been applied.</small></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
